@@ -1,52 +1,22 @@
 import express from "express";
-import mongoose from "mongoose";
-
-// Import route handlers for job counts and jobs
-// import jobCountsRoutes from './routes/jobCounts.js';
-import jobRoutes from './routes/job.js';
-
-// Create the Express app
 const app = express();
 
-// Connect to MongoDB
-mongoose
-  .connect("mongodb://localhost:27017/db_hire", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("Error connecting to MongoDB:", err));
+// Import the API router
+import apiRouter from "./server/api.js";
 
-// Middleware to parse JSON data
-app.use(express.json());
+// API router
+app.use("/api", apiRouter);
 
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origi', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    next()
-});
+// Other middleware and routes...
+import bodyParser from "body-parser";
 
-// Middleware to handle CORS (if needed)
-// app.use(cors());
+// Parse incoming JSON data
+app.use(bodyParser.json());
+// Parse incoming URL-encoded data
+app.use(bodyParser.urlencoded({ extended: true }));
 
-// Route middleware for job counts and jobs
-// app.use('/job-counts', jobCountsRoutes);
-app.use('/jobdata', jobRoutes);
-
-// app.get("/jobdatas", async (req, res) => {
-//   try {
-//     const JobData = mongoose.model("jobdatas");
-//     const data = await JobData.find();
-//     res.json(data);
-//   } catch (error) {
-//     res.status(500).json({ error: "Internal Server Error cant read data" });
-//   }
-// });
-
-// Start the server
-const port = 8000;
+// Starting server
+const port = process.env.PORT || 8000;
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Server running on port ${port}`);
 });
